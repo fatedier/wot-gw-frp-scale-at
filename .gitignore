@@ -1,0 +1,10 @@
+# Standard artifacts
+
+# Project builds
+webthing-server/lib/*.js
+webthing-server/lib/*.js.map
+webthing-server/lib/*.d.ts
+webthing-server/lib/*.d.ts.map
+
+# Build artifacts
+**/node_modules/
