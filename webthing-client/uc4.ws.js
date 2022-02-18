@@ -2,10 +2,14 @@ const WebSocket = require('ws');
 const {startRecording, stopRecording} = require('./record-traffic')
 
 // Global variables
-const remoteGwHost = 'localhost'
-let ws = null;
+const remoteGwHost = process.env.WEBTHING_SERVER_HOST || 'localhost'
+
 const DEVICE_COUNT = 15
 const useCase = process.env.USE_CASE || 'undefined-use-USE_CASE-env-var'
+const RECORDING_ENABLED = process.env.RECORDING_ENABLED !== undefined?  (process.env.RECORDING_ENABLED=='1'? true: false): true
+const RECORDING_INTERFACE = process.env.RECORDING_INTERFACE || 'lo'
+const RECORDING_PORT = process.env.RECORDING_PORT || 8888
+let ws = null;
 
 
 // Declare Webthing WebSocket messages
@@ -77,7 +81,7 @@ function webThingsDemo() {
   ws.on('open', () => {
     console.log(`WebSocket opened at: ${wsUrl}`);
 
-    startRecording(useCase, 'lo', 8888)
+    RECORDING_ENABLED && startRecording(useCase, RECORDING_INTERFACE, RECORDING_PORT)
 
     // trigger action at interval
     const thingsArray = Array.from(devicesActive)
@@ -96,7 +100,7 @@ function webThingsDemo() {
       if (n === DEVICE_COUNT) {
         clearInterval(myint)
         setTimeout(()=>{
-          stopRecording()
+          RECORDING_ENABLED && stopRecording()
           // end this test
           ws.close()
         }, 20*1000)

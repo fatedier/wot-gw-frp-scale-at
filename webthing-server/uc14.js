@@ -94,7 +94,10 @@ function runServer() {
 
   const server = new WebThingServer(
     new MultipleThings(things, 'GWdevice'),
-    port
+    port,
+    null, null, null, '/',
+    // disableHostValidation:
+    true
   );
 
   process.on('SIGINT', () => {

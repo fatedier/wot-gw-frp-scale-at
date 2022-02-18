@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Test cases for FRP test'n'scale - the server part",
   "scripts": {
-    "uc1": "NODE_PATH=. node uc14",
-    "uc2": "NODE_PATH=. node uc2",
-    "uc3": "NODE_PATH=. node uc3",
-    "uc4": "NODE_PATH=. node uc14",
+    "uc1": "node uc14",
+    "uc2": "node uc2",
+    "uc3": "node uc3",
+    "uc4": "node uc14",
     "build": "tsc -p ."
   },
   "author": "RPMANetworks",

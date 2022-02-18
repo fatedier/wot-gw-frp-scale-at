@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+    frps:
+        image: fatedier/frps:v0.39.1
+        ports:
+        - "7500:7500"
+        volumes:
+        - "./frps-config:/app"
+        command: -c ./frps.ini
+
+    webthing-server:
+        image: webthing-server
+        build: webthing-server
+        depends_on:
+        - frps
+        environment:
+          PORT: 8888
+        ports:
+        - "8888:8888"
+        command: uc3
+
+    webthing-client:
+        image: webthing-client
+        build: webthing-client
+        depends_on:
+        - webthing-server
+        environment:
+          WEBTHING_SERVER_HOST: 'webthing-server'
+          USE_CASE: 'uc3'
+          RECORDING_ENABLED: 1
+          RECORDING_INTERFACE: 'eth0'
+          RECORDING_PORT: 8888
+        command: uc3
+        # volumes:
+        # - "/app" # Anonymous volume
+        # - "data:/data" # Named volume
+        # - "mydata:/data" # External volume
+
+# volumes:
+#     data:
+#     mydata:
+#         external: true
