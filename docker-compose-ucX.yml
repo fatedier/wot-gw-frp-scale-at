@@ -1,19 +1,12 @@
 version: '3'
 
 services:
-    frps:
-        image: fatedier/frps:v0.39.1
-        # ports:
-        # - "7500:7500"
-        volumes:
-        - "./frps-config:/app"
-        command: -c ./frps.ini
-
     webthing-server:
         image: webthing-server
         build: webthing-server
-        depends_on:
-        - frps
+        networks:
+        - frps-network
+        - my-network
         environment:
           RECORDING_ENABLED: 1
           RECORDING_INTERFACE: eth0
@@ -21,8 +14,8 @@ services:
           UC_INTERVAL: 60
           UC_NAME: ${TEST_UC}
           UC_PORT: 8888
-        # ports:
-        # - "8888:8888"
+        expose:
+        - "8888"
         command: ${TEST_UC}
 
     webthing-client:
@@ -30,15 +23,29 @@ services:
         build: webthing-client
         depends_on:
         - webthing-server
+        networks:
+        - my-network
         environment:
           UC_REMOTE_HOST: webthing-server
           UC_REMOTE_PORT: 8888
           UC_INTERVAL: 60
         command: ${TEST_UC}
+
+        # command: ""
+        # entrypoint: /bin/bash
+        # stdin_open: true # docker run -i
+        # tty: true        # docker run -t
+
         # volumes:
         # - "/app" # Anonymous volume
         # - "data:/data" # Named volume
         # - "mydata:/data" # External volume
+
+networks:
+  my-network:
+    name: ${COMPOSE_PROJECT_NAME}
+  frps-network:
+    external: true
 
 # volumes:
 #     data:

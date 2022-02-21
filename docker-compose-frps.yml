@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+    frps:
+        image: fatedier/frps:v0.39.1
+        ports:
+        - "7500:7500"
+        volumes:
+        - "./frps-config:/app"
+        command: -c ./frps.ini
+
+networks:
+  default:
+    external: true
+    name: frps-network
