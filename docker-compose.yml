@@ -3,8 +3,8 @@ version: '3'
 services:
     frps:
         image: fatedier/frps:v0.39.1
-        ports:
-        - "7500:7500"
+        # ports:
+        # - "7500:7500"
         volumes:
         - "./frps-config:/app"
         command: -c ./frps.ini
@@ -15,10 +15,15 @@ services:
         depends_on:
         - frps
         environment:
-          PORT: 8888
-        ports:
-        - "8888:8888"
-        command: uc3
+          RECORDING_ENABLED: 1
+          RECORDING_INTERFACE: eth0
+          RECORDING_PORT: 7000
+          UC_INTERVAL: 60
+          UC_NAME: ${TEST_UC}
+          UC_PORT: 8888
+        # ports:
+        # - "8888:8888"
+        command: ${TEST_UC}
 
     webthing-client:
         image: webthing-client
@@ -26,12 +31,10 @@ services:
         depends_on:
         - webthing-server
         environment:
-          WEBTHING_SERVER_HOST: 'webthing-server'
-          USE_CASE: 'uc3'
-          RECORDING_ENABLED: 1
-          RECORDING_INTERFACE: 'eth0'
-          RECORDING_PORT: 8888
-        command: uc3
+          UC_REMOTE_HOST: webthing-server
+          UC_REMOTE_PORT: 8888
+          UC_INTERVAL: 60
+        command: ${TEST_UC}
         # volumes:
         # - "/app" # Anonymous volume
         # - "data:/data" # Named volume

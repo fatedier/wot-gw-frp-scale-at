@@ -3,7 +3,8 @@
  */
 
 import bodyParser from 'body-parser';
-import * as dnssd from 'dnssd';
+// Disable mdns because we don't need it for our tests and we want to keep quiet of the network
+// import * as dnssd from 'dnssd';
 import express from 'express';
 import expressWs from 'express-ws';
 import * as http from 'http';
@@ -826,7 +827,8 @@ export class WebThingServer {
 
   router: expressWs.Router;
 
-  mdns!: dnssd.Advertisement;
+  // Disable mdns because we don't need it for our tests and we want to keep quiet of the network
+  // mdns!: dnssd.Advertisement;
 
   /**
    * Initialize the WebThingServer.
@@ -1000,6 +1002,8 @@ export class WebThingServer {
    * @returns {Promise} Promise which resolves once the server is started.
    */
   start(): Promise<void> {
+    // Disable mdns because we don't need it for our tests and we want to keep quiet of the network
+    /*    
     const opts: dnssd.Options = {
       name: this.name,
       txt: {
@@ -1019,6 +1023,7 @@ export class WebThingServer {
       }, 10000);
     });
     this.mdns.start();
+    */
 
     return new Promise((resolve) => {
       this.server.listen({ port: this.port }, resolve);
@@ -1031,9 +1036,12 @@ export class WebThingServer {
    * @param {boolean?} force - Whether or not to force shutdown immediately.
    * @returns {Promise} Promise which resolves once the server is stopped.
    */
+  //@ts-ignore
   stop(force = false): Promise<unknown> {
     const promises: Promise<void>[] = [];
 
+    // Disable mdns because we don't need it for our tests and we want to keep quiet of the network
+    /*
     if (this.mdns) {
       promises.push(
         new Promise((resolve, reject) => {
@@ -1047,6 +1055,7 @@ export class WebThingServer {
         })
       );
     }
+    */
 
     promises.push(
       new Promise((resolve, reject) => {

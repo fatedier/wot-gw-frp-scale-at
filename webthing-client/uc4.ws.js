@@ -1,14 +1,13 @@
 const WebSocket = require('ws');
-const {startRecording, stopRecording} = require('./record-traffic')
+require('dotenv').config()
 
 // Global variables
-const remoteGwHost = process.env.WEBTHING_SERVER_HOST || 'localhost'
+const UC_REMOTE_HOST = process.env.UC_REMOTE_HOST
+const UC_REMOTE_PORT = process.env.UC_REMOTE_PORT
+const UC_INTERVAL = process.env.UC_INTERVAL
 
 const DEVICE_COUNT = 15
-const useCase = process.env.USE_CASE || 'undefined-use-USE_CASE-env-var'
-const RECORDING_ENABLED = process.env.RECORDING_ENABLED !== undefined?  (process.env.RECORDING_ENABLED=='1'? true: false): true
-const RECORDING_INTERFACE = process.env.RECORDING_INTERFACE || 'lo'
-const RECORDING_PORT = process.env.RECORDING_PORT || 8888
+
 let ws = null;
 
 
@@ -69,9 +68,10 @@ let devicesActive = new Set()
 
 // Main demo function
 function webThingsDemo() {
-  let port = parseInt(process.argv[2]) || 8888
-  let intervalSec = parseInt(process.argv[3]) || 60
-  const wsUrl = `ws://${remoteGwHost}:${port}`
+  let port = parseInt(UC_REMOTE_PORT)
+  let intervalSec = parseInt(UC_INTERVAL)
+
+  const wsUrl = `ws://${UC_REMOTE_HOST}:${port}`
 
   for (let i=0;i<DEVICE_COUNT;i++) devicesActive.add(`urn:dev:ops:my-lamp-${i}`)
 
@@ -80,8 +80,6 @@ function webThingsDemo() {
 
   ws.on('open', () => {
     console.log(`WebSocket opened at: ${wsUrl}`);
-
-    RECORDING_ENABLED && startRecording(useCase, RECORDING_INTERFACE, RECORDING_PORT)
 
     // trigger action at interval
     const thingsArray = Array.from(devicesActive)
@@ -100,7 +98,6 @@ function webThingsDemo() {
       if (n === DEVICE_COUNT) {
         clearInterval(myint)
         setTimeout(()=>{
-          RECORDING_ENABLED && stopRecording()
           // end this test
           ws.close()
         }, 20*1000)

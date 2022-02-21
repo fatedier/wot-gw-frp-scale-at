@@ -1,15 +1,13 @@
 const WebSocket = require('ws');
-const {startRecording, stopRecording} = require('./record-traffic')
+require('dotenv').config()
 
 // Global variables
-const remoteGwHost = process.env.WEBTHING_SERVER_HOST || 'localhost'
-const DEVICE_COUNT = 15
-const useCase = process.env.USE_CASE || 'undefined-use-USE_CASE=ucX-env-var'
-const RECORDING_ENABLED = process.env.RECORDING_ENABLED !== undefined?  (process.env.RECORDING_ENABLED=='1'? true: false): true
-const RECORDING_INTERFACE = process.env.RECORDING_INTERFACE || 'lo'
-const RECORDING_PORT = process.env.RECORDING_PORT || 8888
-let ws = null;
+const UC_REMOTE_HOST = process.env.UC_REMOTE_HOST
+const UC_REMOTE_PORT = process.env.UC_REMOTE_PORT
 
+const DEVICE_COUNT = 15
+
+let ws = null;
 
 // Declare Webthing WebSocket messages
 const REQUEST_ACTION = 'requestAction';
@@ -69,9 +67,9 @@ let devicesActive = new Set()
 // Main demo function
 
 function webThingsDemo() {
-  let port = parseInt(process.argv[2]) || 8888
-  let intervalSec = parseInt(process.argv[3]) || 60
-  const wsUrl = `ws://${remoteGwHost}:${port}`
+  let port = parseInt(UC_REMOTE_PORT)
+
+  const wsUrl = `ws://${UC_REMOTE_HOST}:${port}`
 
   for (let i=0;i<DEVICE_COUNT;i++) devicesActive.add(`urn:dev:ops:my-lamp-${i}`)
 
@@ -93,19 +91,6 @@ function webThingsDemo() {
       ws.send(JSON.stringify(msg));
     }
 
-    // delay recording for a bit to be sure subscribe messages went trough
-    setTimeout(()=>{
-      RECORDING_ENABLED && startRecording(useCase, RECORDING_INTERFACE, RECORDING_PORT)
-      setTimeout(()=>{
-        RECORDING_ENABLED && stopRecording()
-
-        // end this test
-        ws.close()
-
-      // NOTE:  add +1 so we catch all DEVICE_COUNT
-      //        also add a bit of time to account for possible network latency
-      }, (DEVICE_COUNT +1)*intervalSec*1000 + 20*1000)
-    }, 5*1000)
   });
 
   ws.on('message', (data) => {

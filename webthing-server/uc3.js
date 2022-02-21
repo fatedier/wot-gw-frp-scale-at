@@ -1,5 +1,22 @@
 const { Action, Event, Property, MultipleThings, Thing, Value, WebThingServer } = require('./lib/webthing');
 const { v4: uuidv4 } = require('uuid');
+require('dotenv').config()
+
+// recording config
+const RECORDING_ENABLED = process.env.RECORDING_ENABLED
+const RECORDING_INTERFACE = process.env.RECORDING_INTERFACE
+const RECORDING_PORT = process.env.RECORDING_PORT
+const {startRecording, stopRecording} = require('./record-traffic')
+
+
+// use case config
+const UC_INTERVAL = process.env.UC_INTERVAL // in seconds
+const UC_NAME = process.env.UC_NAME // usually: 'uc[1-4]'
+const UC_PORT = process.env.UC_PORT // usually: 8888
+const DEVICE_COUNT = 15
+
+
+// actual test code
 
 class OverheatedEvent extends Event {
   constructor(thing, data) {
@@ -87,8 +104,8 @@ function makeThing(customId = 0) {
 }
 
 function runServer() {
-  let port = parseInt(process.argv[2]) || 8888
-  let intervalSec = parseInt(process.argv[3]) || 60
+  const port = parseInt(UC_PORT)
+  const ucInterval = parseInt(UC_INTERVAL)
 
   let things = []
   for (let i=0; i<15; i++) things.push(makeThing(i))
@@ -118,7 +135,7 @@ function runServer() {
     }
 
     n += 1
-  }, intervalSec * 1000);
+  }, ucInterval * 1000);
   
   // process.on('SIGINT', () => {
   //   console.log('Caught signal 1')
@@ -131,7 +148,29 @@ function runServer() {
   //     .catch(() => process.exit());
   // });
 
-  server.start().catch(console.error);
+  server.start()
+  .then(()=>{
+    // delay recording for a bit to be sure subscribe messages went trough
+    setTimeout(()=>{
+      const recordingPort = parseInt(RECORDING_PORT)
+
+      RECORDING_ENABLED == '1' && startRecording(UC_NAME, RECORDING_INTERFACE, recordingPort)
+      setTimeout(()=>{
+        clearInterval(myint)
+
+        RECORDING_ENABLED == '1' && stopRecording()
+
+        // end this test. delay a bit to not record the socket close packets
+        setTimeout(()=>{
+          server.stop()
+        }, 2*1000)
+
+      // NOTE:  add +1 so we catch all DEVICE_COUNT
+      //        also add a bit of time to account for possible network latency
+      }, (DEVICE_COUNT +1)*ucInterval*1000 + 20*1000)
+    }, 5*1000)
+  })
+  .catch(console.error);
 }
 
 runServer();

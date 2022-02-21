@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "description": "Test cases for FRP test'n'scale - the client part",
   "scripts": {
-    "uc1": "USE_CASE=uc1 node uc123.ws.js",
-    "uc2": "USE_CASE=uc2 node uc123.ws.js",
-    "uc3": "USE_CASE=uc3 node uc123.ws.js",
-    "uc4": "USE_CASE=uc4 node uc4.ws.js"
+    "uc1": "node uc123.ws.js",
+    "uc2": "node uc123.ws.js",
+    "uc3": "node uc123.ws.js",
+    "uc4": "node uc4.ws.js"
   },
   "author": "RPMANetworks",
   "license": "UNLICENSED",
   "dependencies": {
+    "dotenv": "^16.0.0",
     "ws": "^8.5.0"
   }
 }
