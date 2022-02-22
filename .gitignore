@@ -8,3 +8,6 @@ webthing-server/lib/*.d.ts.map
 
 # Build artifacts
 **/node_modules/
+
+# extra
+frp-bin

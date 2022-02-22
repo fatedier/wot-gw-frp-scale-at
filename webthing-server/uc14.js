@@ -6,13 +6,13 @@ require('dotenv').config()
 const RECORDING_ENABLED = process.env.RECORDING_ENABLED
 const RECORDING_INTERFACE = process.env.RECORDING_INTERFACE
 const RECORDING_PORT = process.env.RECORDING_PORT
+const RECORDING_FILE_PREFIX = process.env.RECORDING_FILE_PREFIX
 const {startRecording, stopRecording} = require('./record-traffic')
 
 
 // use case config
 const UC_INTERVAL = process.env.UC_INTERVAL // in seconds
-const UC_NAME = process.env.UC_NAME // usually: 'uc[1-4]'
-const UC_PORT = process.env.UC_PORT // usually: 8888
+const SERVER_PORT = process.env.SERVER_PORT // usually: 8888
 const DEVICE_COUNT = 15
 
 
@@ -104,7 +104,7 @@ function makeThing(customId = 0) {
 }
 
 function runServer() {
-  const port = parseInt(UC_PORT)
+  const port = parseInt(SERVER_PORT)
 
   let things = []
   for (let i=0; i<15; i++) things.push(makeThing(i))
@@ -131,7 +131,7 @@ function runServer() {
       const recordingPort = parseInt(RECORDING_PORT)
       const ucInterval = parseInt(UC_INTERVAL)
 
-      RECORDING_ENABLED == '1' && startRecording(UC_NAME, RECORDING_INTERFACE, recordingPort)
+      RECORDING_ENABLED == '1' && startRecording(RECORDING_FILE_PREFIX, RECORDING_INTERFACE, recordingPort)
       setTimeout(()=>{
         RECORDING_ENABLED == '1' && stopRecording()
 

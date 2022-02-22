@@ -2,8 +2,8 @@ const WebSocket = require('ws');
 require('dotenv').config()
 
 // Global variables
-const UC_REMOTE_HOST = process.env.UC_REMOTE_HOST
-const UC_REMOTE_PORT = process.env.UC_REMOTE_PORT
+const SERVER_FRP_DOMAIN = process.env.SERVER_FRP_DOMAIN
+const SERVER_FRP_PORT = process.env.SERVER_FRP_PORT
 
 const DEVICE_COUNT = 15
 
@@ -67,9 +67,9 @@ let devicesActive = new Set()
 // Main demo function
 
 function webThingsDemo() {
-  let port = parseInt(UC_REMOTE_PORT)
+  let port = parseInt(SERVER_FRP_PORT)
 
-  const wsUrl = `ws://${UC_REMOTE_HOST}:${port}`
+  const wsUrl = `ws://${SERVER_FRP_DOMAIN}:${port}`
 
   for (let i=0;i<DEVICE_COUNT;i++) devicesActive.add(`urn:dev:ops:my-lamp-${i}`)
 

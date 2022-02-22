@@ -17,6 +17,6 @@ RUN echo "#log: ${project}: Preparing sources" \
 
 RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-WORKDIR /usr/local/${project}
-ENTRYPOINT [ "/usr/local/bin/npm", "run" ]
+RUN mv /usr/local/${project}/npm-entrypoint.sh /usr/local/bin
+ENTRYPOINT [ "npm-entrypoint.sh" ]
 CMD [ "uc1" ]

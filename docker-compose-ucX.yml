@@ -4,16 +4,14 @@ services:
     webthing-server:
         image: webthing-server
         build: webthing-server
-        networks:
-        - frps-network
-        - my-network
+        hostname: ${COMPOSE_PROJECT_NAME}
         environment:
           RECORDING_ENABLED: 1
           RECORDING_INTERFACE: eth0
           RECORDING_PORT: 7000
+          SERVER_NAME: ${COMPOSE_PROJECT_NAME}
+          SERVER_PORT: 8888
           UC_INTERVAL: 60
-          UC_NAME: ${TEST_UC}
-          UC_PORT: 8888
         expose:
         - "8888"
         command: ${TEST_UC}
@@ -23,11 +21,9 @@ services:
         build: webthing-client
         depends_on:
         - webthing-server
-        networks:
-        - my-network
         environment:
-          UC_REMOTE_HOST: webthing-server
-          UC_REMOTE_PORT: 8888
+          SERVER_FRP_DOMAIN: ${COMPOSE_PROJECT_NAME}.frps
+          SERVER_FRP_PORT: 8090
           UC_INTERVAL: 60
         command: ${TEST_UC}
 
@@ -42,10 +38,9 @@ services:
         # - "mydata:/data" # External volume
 
 networks:
-  my-network:
-    name: ${COMPOSE_PROJECT_NAME}
-  frps-network:
+  default:
     external: true
+    name: frps-network
 
 # volumes:
 #     data:
