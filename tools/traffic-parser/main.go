@@ -31,18 +31,21 @@ func handleTcpdumpContent(tcpdumpFile string) {
 	defer fp.Close()
 
 	buf := bufio.NewScanner(fp)
-	allBytes := 0
 
-	reg := regexp.MustCompile(`.*length ([0-9]+)`)
+	allBytes := 0
+	packetNums := 0
+
+	reg := regexp.MustCompile(`.*length ([0-9]+):`)
 
 	for {
 		if !buf.Scan() {
 			break
 		}
-
 		line := buf.Text()
 
 		if strings.Contains(line, "IP") && strings.Contains(line, "Flags") {
+			packetNums++
+
 			strs := reg.FindStringSubmatch(line)
 			if len(strs) == 2 {
 				temp, err := strconv.Atoi(strs[1])
@@ -55,5 +58,5 @@ func handleTcpdumpContent(tcpdumpFile string) {
 		}
 	}
 
-	fmt.Printf("file: %v parse finish\nbytes: %v\n", tcpdumpFile, allBytes)
+	fmt.Printf("file: %v parse finish\nbytes: %v, packet numbers: %v\n", tcpdumpFile, allBytes, packetNums)
 }
