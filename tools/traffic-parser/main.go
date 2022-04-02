@@ -11,7 +11,7 @@ import (
 )
 
 // tcpdump capture in frpc machine and save to file
-// sudo tcpdump -i any -vnn port 7000 > /tmp/tcpdump.log
+// sudo tcpdump -i any -nn port 7000 > /tmp/tcpdump.log
 
 // usage: ./main --file=xxx
 
@@ -31,11 +31,9 @@ func handleTcpdumpContent(tcpdumpFile string) {
 	defer fp.Close()
 
 	buf := bufio.NewScanner(fp)
+	allBytes := 0
 
-	inBytes := 0  // frps -> frpc
-	outBytes := 0 // frpc -> frps
-
-	reg := regexp.MustCompile(`.*length ([0-9]+)\)`)
+	reg := regexp.MustCompile(`.*length ([0-9]+)`)
 
 	for {
 		if !buf.Scan() {
@@ -44,22 +42,18 @@ func handleTcpdumpContent(tcpdumpFile string) {
 
 		line := buf.Text()
 
-		if strings.Contains(line, "Out IP") {
-			temp, err := strconv.Atoi(reg.FindStringSubmatch(line)[1])
-			if err != nil {
-				panic(err)
+		if strings.Contains(line, "IP") && strings.Contains(line, "Flags") {
+			strs := reg.FindStringSubmatch(line)
+			if len(strs) == 2 {
+				temp, err := strconv.Atoi(strs[1])
+				if err != nil {
+					fmt.Println("invalid number")
+				} else {
+					allBytes += temp
+				}
 			}
-			outBytes += temp
-		} else if strings.Contains(line, "In  IP") {
-			temp, err := strconv.Atoi(reg.FindStringSubmatch(line)[1])
-			if err != nil {
-				panic(err)
-			}
-			inBytes += temp
-		} else {
-			// ignore
 		}
 	}
 
-	fmt.Printf("file: %v parse finish\nin bytes: %v, out bytes: %v\n", tcpdumpFile, inBytes, outBytes)
+	fmt.Printf("file: %v parse finish\nbytes: %v\n", tcpdumpFile, allBytes)
 }
