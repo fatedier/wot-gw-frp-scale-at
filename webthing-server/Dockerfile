@@ -1,4 +1,4 @@
-FROM fatedier/frpc:v0.39.1 AS temp
+FROM fatedier/frpc:v0.41.0 AS temp
 
 FROM node:16-bullseye-slim
 LABEL maintainer="Adrian Oanca (adrian.oanca@rpmanetworks.com)"
