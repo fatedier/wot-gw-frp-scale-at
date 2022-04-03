@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -35,27 +34,21 @@ func handleTcpdumpContent(tcpdumpFile string) {
 	allBytes := 0
 	packetNums := 0
 
-	reg := regexp.MustCompile(`.*length ([0-9]+)`)
-
 	for {
 		if !buf.Scan() {
 			break
 		}
 		line := buf.Text()
 
-		if strings.Contains(line, "IP") && strings.Contains(line, "Flags") {
-			packetNums++
+		strs := strings.Split(line, "length")
 
-			strs := reg.FindStringSubmatch(line)
-			if len(strs) == 2 {
-				temp, err := strconv.Atoi(strs[1])
-				if err != nil {
-					fmt.Println("invalid number")
-				} else {
-					allBytes += (temp + 40)
-				}
-			}
+		n, err := strconv.Atoi(strings.TrimSpace(strs[len(strs)-1]))
+		if err != nil {
+			fmt.Println("invalid number")
+			continue
 		}
+		allBytes += n
+		packetNums++
 	}
 
 	fmt.Printf("file: %v parse finish\nbytes: %v, packet numbers: %v\n", tcpdumpFile, allBytes, packetNums)
