@@ -35,7 +35,7 @@ func handleTcpdumpContent(tcpdumpFile string) {
 	allBytes := 0
 	packetNums := 0
 
-	reg := regexp.MustCompile(`.*length ([0-9]+):`)
+	reg := regexp.MustCompile(`.*length ([0-9]+)`)
 
 	for {
 		if !buf.Scan() {
@@ -52,7 +52,7 @@ func handleTcpdumpContent(tcpdumpFile string) {
 				if err != nil {
 					fmt.Println("invalid number")
 				} else {
-					allBytes += temp
+					allBytes += (temp + 40)
 				}
 			}
 		}
