@@ -5,16 +5,18 @@ let recorder = undefined
 function startRecording(recordFilePrefix, interfaceName, port) {
   if (recorder) return false
 
-  let options=['-U', '-i', interfaceName, '-w', `./${recordFilePrefix}-${Date.now()}.pcap`, 'port', `${port}`];
+  // let options=['-U', '-i', interfaceName, '-w', `./${recordFilePrefix}-${Date.now()}.pcap`, 'port', `${port}`];
+  let options=['-c', `tcpdump -l -i ${interfaceName} -nn port ${port} > ./${recordFilePrefix}.tcpdump`]
 
-  recorder = spawn('tcpdump', options);
-  
+  // recorder = spawn('tcpdump', options);
+  recorder = spawn('sh', options)
+
   // recorder.stdout.on('data', (data) => {
-  //   console.log(`stdout: ${data}`);
+  //  console.log(`stdout: ${data}`);
   // });
   
   // recorder.stderr.on('data', (data) => {
-  //   console.error(`stderr: ${data}`);
+  //  console.error(`stderr: ${data}`);
   // });
   
   recorder.on('close', (code) => {

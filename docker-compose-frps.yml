@@ -2,7 +2,7 @@ version: '3'
 
 services:
     frps:
-        image: fatedier/frps:v0.39.1
+        image: fatedier/frps:v0.41.0
         ports:
         - "7500:7500"
         volumes:
