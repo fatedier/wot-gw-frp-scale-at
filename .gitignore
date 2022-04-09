@@ -11,3 +11,4 @@ webthing-server/lib/*.d.ts.map
 
 # extra
 frp-bin
+.DS_Store
