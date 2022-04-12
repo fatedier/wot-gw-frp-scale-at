@@ -9,10 +9,14 @@ import (
 )
 
 /*
-	1. 每次 ps 的数据写到 mem.log 里面，可以基于每次的 ps 值来重新计算所有的统计数据
-	2. 每次 ps 之后分别统计 frpc 和 frps 并写到 mem_statics.csv 文件里
+	1. When ps is called, the data is written to mem.log.
+	2. After ps is called, the data is analyzed and the statistics are calculated.
+	3. The statistics are written to mem_statics.csv.
+	4. The statistics are plotted in Excel.
 
-	最后 csv 文件导入 Excel 就可以画出 frpc 和 frps 的内存使用趋势图
+	usage:
+	go build -o mem-dog
+	./mem-dog to run
 */
 
 const (
